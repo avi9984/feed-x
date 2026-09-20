@@ -1,15 +1,15 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import helmet from 'helmet';
+import "dotenv/config";
+import app from "./app.js";
+import connectDb from "./db/dbConfig.js";
 
+const PORT = process.env.PORT || 4000;
 
-const app=express();
+const startServer = async () => {
+    await connectDb();
 
+    app.listen(PORT, () => {
+        console.log(`Server listen on port http://localhost:${PORT}`);
+    })
+}
 
-app.use(express.json());
-app.use(cors('*'));
-app.use(morgan('dev'));
-app.use(helmet());
-
-
+startServer();
