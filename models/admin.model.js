@@ -5,8 +5,8 @@ const adminSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     mobile_no: { type: String, required: true, unique: true, minLength: 10, maxLength: 10 },
     password: { type: String, required: true },
-    login_history: { type: [Date.now()], default: [] },
-    last_login:{type:Date},
+    login_history: { type: [Date], default: [] },
+    last_login: { type: Date },
     type: { type: String, enum: ["Admin"], default: "Admin" }
 }, { versionKey: false, timestamps: true })
 
