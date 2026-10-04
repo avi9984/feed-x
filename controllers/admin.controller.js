@@ -88,3 +88,46 @@ export const sendOtpToEmail = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error", success: false })
     }
 }
+
+export const admin_login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        const errors = validationResult(req);
+        if (!errors.array()) {
+            return res
+                .status(400).json({ message: "Validation Errors", errors: errors, success: false });
+        }
+
+        const check_email = await Admin.findOne({ email: email.toLowerCase() });
+        if (!check_email) {
+            return res
+                .status(400)
+                .json({ message: "Account doesn't Exists", success: false });
+        }
+
+        const check_password = await bcrypt.compare(password, check_email.password);
+        if (!check_password) {
+            return res.status(400).json({ message: "Password doesn't Match", success: false });
+        }
+
+        const token = jwt.sign(
+            {
+                _id: check_email._id,
+                email: check_email.email,
+                mobile_no: check_email.mobile_no,
+            },
+            process.env.JWT_SECRET,
+            { algorithm: "HS256" },
+        );
+
+        return res.status(200).json({
+            message: "Login Successfully",
+            success: true,
+            token: token
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error", success: false })
+    }
+}
