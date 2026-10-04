@@ -3,6 +3,7 @@ import Admin from '../models/admin.model.js';
 import OTP from '../models/otp.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import generateFourDigitNumber from '../services/otp_generator.js';
 const SALT_ROUND = 10;
 
 
@@ -67,5 +68,23 @@ export const create_admin = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error", success: false });
+    }
+}
+
+export const sendOtpToEmail = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.array()) {
+            return res.status(400)
+                .json({
+                    message: "Validation Errors",
+                    errors: errors,
+                    success: false
+                });
+        }
+        await generateFourDigitNumber(req.body.email, req, res);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error", success: false })
     }
 }
