@@ -3,6 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import adminRouter from './routes/admin.routes.js';
+import categoryRouter from './routes/category.routes.js';
+
 
 
 const app = express();
@@ -23,6 +25,8 @@ app.get("/health", (req, res) => {
     });
 });
 
-app.use('/api/admins', adminRouter)
+app.use('/api/admins', adminRouter);
+app.use('/api/categories', categoryRouter);
+
 
 export default app;
