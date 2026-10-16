@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import adminRouter from './routes/admin.routes.js';
 import categoryRouter from './routes/category.routes.js';
+import newsRouter from './routes/news.routes.js';
 
 
 
@@ -27,6 +28,7 @@ app.get("/health", (req, res) => {
 
 app.use('/api/admins', adminRouter);
 app.use('/api/categories', categoryRouter);
+app.use('/api/news', newsRouter);
 
 
 export default app;
