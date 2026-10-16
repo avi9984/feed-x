@@ -1,58 +1,14 @@
 import mongoose from 'mongoose';
 import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
 import Category from '../models/category.model.js';
-import Admin from '../models/admin.model.js';
 import NEWS from '../models/news.model.js';
 
-// Helper function to verify admin access
-const verifyAdminAuth = async (req) => {
-    // 1. If already authenticated and attached by middleware
-    if (req.admin && (req.admin.type === "Admin" || req.admin._id)) {
-        return { authorized: true, admin: req.admin };
-    }
-
-    // 2. Extract token from Authorization header or custom token header
-    const authHeader = req.headers.authorization || req.headers.token;
-    if (!authHeader) {
-        return { authorized: false, status: 401, message: "Authorization token is required" };
-    }
-
-    const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
-    if (!token) {
-        return { authorized: false, status: 401, message: "Token not found" };
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const admin = await Admin.findById(decoded._id);
-
-        if (!admin) {
-            return { authorized: false, status: 403, message: "Admin account not found or unauthorized" };
-        }
-
-        if (admin.type && admin.type !== "Admin") {
-            return { authorized: false, status: 403, message: "Access denied. Only Admins can perform this action" };
-        }
-
-        req.admin = admin;
-        return { authorized: true, admin };
-    } catch (err) {
-        return { authorized: false, status: 401, message: "Invalid or expired token" };
-    }
-};
-
 /**
- * @desc Create a new category (Admin Only)
+ * @desc Create a new category (Admin Only - verified by verifyAdmin middleware)
  * @route POST /api/categories
  */
 export const create_category = async (req, res) => {
     try {
-        const auth = await verifyAdminAuth(req);
-        if (!auth.authorized) {
-            return res.status(auth.status).json({ message: auth.message, success: false });
-        }
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ message: "Validation Errors", errors: errors.array(), success: false });
@@ -136,16 +92,11 @@ export const get_category_by_id = async (req, res) => {
 };
 
 /**
- * @desc Update a category (Admin Only)
+ * @desc Update a category (Admin Only - verified by verifyAdmin middleware)
  * @route PUT /api/categories/:id
  */
 export const update_category = async (req, res) => {
     try {
-        const auth = await verifyAdminAuth(req);
-        if (!auth.authorized) {
-            return res.status(auth.status).json({ message: auth.message, success: false });
-        }
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ message: "Validation Errors", errors: errors.array(), success: false });
@@ -202,16 +153,11 @@ export const update_category = async (req, res) => {
 };
 
 /**
- * @desc Delete a category (Admin Only)
+ * @desc Delete a category (Admin Only - verified by verifyAdmin middleware)
  * @route DELETE /api/categories/:id
  */
 export const delete_category = async (req, res) => {
     try {
-        const auth = await verifyAdminAuth(req);
-        if (!auth.authorized) {
-            return res.status(auth.status).json({ message: auth.message, success: false });
-        }
-
         const { id } = req.params;
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid Category ID", success: false });
