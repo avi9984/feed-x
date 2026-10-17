@@ -5,18 +5,14 @@ import helmet from 'helmet';
 import adminRouter from './routes/admin.routes.js';
 import categoryRouter from './routes/category.routes.js';
 import newsRouter from './routes/news.routes.js';
-
-
+import userRouter from './routes/user.routes.js';
 
 const app = express();
-
 
 app.use(express.json());
 app.use(cors('*'));
 app.use(morgan('dev'));
 app.use(helmet());
-
-
 
 // Health Check 
 app.get("/health", (req, res) => {
@@ -29,6 +25,6 @@ app.get("/health", (req, res) => {
 app.use('/api/admins', adminRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/news', newsRouter);
-
+app.use('/api/users', userRouter);
 
 export default app;
