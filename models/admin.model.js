@@ -7,7 +7,8 @@ const adminSchema = new mongoose.Schema({
     password: { type: String, required: true },
     login_history: { type: [Date], default: [] },
     last_login: { type: Date },
-    type: { type: String, enum: ["Admin"], default: "Admin" }
+    type: { type: String, enum: ["Admin"], default: "Admin" },
+    role: { type: String, enum: ["Admin"], default: "Admin" }
 }, { versionKey: false, timestamps: true })
 
 const Admin = mongoose.model("fx_admin", adminSchema);
